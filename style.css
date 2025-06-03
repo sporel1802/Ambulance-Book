@@ -289,41 +289,59 @@ width: 200px;
 }
 
 @media (max-width: 768px) {
-/* Navbar Adjustments */
-.nav-links {
-display: none;
-flex-direction: column;
-position: absolute;
-top: 60px;
-right: 0;
-background: white;
-width: 100%;
-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-padding: 10px 0;
-}
-.nav-links a {
-display: block;
-padding: 12px;
-text-align: center;
-}
-.menu-icon {
-display: block;
-font-size: 24px;
-cursor: pointer;
-}
-.show-menu {
-display: flex;
-}
-
-/* Make Navbar Elements Fit Mobile */
 .navbar {
-flex-direction: row;
-align-items: center;
-}
-.search-bar-container {
-width: 180px;
-padding: 5px;
-}
+    flex-wrap: wrap;
+    padding: 15px 5%;
+    align-items: center;
+  }
+
+  /* Show hamburger */
+  .menu-icon {
+    display: block;
+  }
+
+  /* Hide nav links and login button by default */
+  .nav-container {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    background: white;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    z-index: 999;
+  }
+
+  /* When menu is toggled (show-menu class), show nav links only, stacked */
+  .nav-container.show-menu {
+    display: flex;
+  }
+
+  /* Make nav-links stacked vertically, full width */
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    padding: 10px 0;
+    gap: 0;
+  }
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    text-align: center;
+    font-size: 18px;
+  }
+
+  /* Hide login button on mobile */
+  .login-button {
+    display: none;
+  }
+
+ .search-bar-container {
+        display: none;
+    }
 
 /* Hero Section */
 .container {
@@ -368,7 +386,7 @@ width: 20px;
 }
 }
 
-@media (max-width: 575px) {
+@media (max-width: 480px) {
 .navbar {
 flex-direction: row;
 padding: 12px 5%;
@@ -422,4 +440,5 @@ padding: 6px 12px;
 .hospital a:hover {
     text-decoration: underline;
 }
+        
         
