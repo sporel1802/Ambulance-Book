@@ -1,0 +1,425 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    width: 90%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+    z-index: 100;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fa475f;
+}
+.logo img {
+    width: 40px;
+    margin-left: 10px;
+}
+ /* Search Bar */
+ .search-bar-container {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eee;
+}
+.search-bar {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    flex-grow: 1;
+    font-family: 'Poppins', sans-serif;
+}
+.search-icon {
+    width: 18px;
+    margin-left: 10px;
+}
+.nav-container {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+.nav-links a {
+    color: #fa475f;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease-in-out;
+}
+.nav-links a:hover {
+    color: black;
+}
+.login-button {
+    background-color: #fa475f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+.login-button:hover {
+    background-color: black;
+}
+
+/* First Section */
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100vh;
+    padding: 0 5%;
+    margin-bottom: 20px;
+}
+.ambulance {
+    width: 50%;
+    transform: translateX(-100%);
+    animation: moveAmbulance 1.5s ease-out forwards;
+}
+@keyframes moveAmbulance {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+.text-content {
+    width: 45%;
+    text-align: left;
+    color: #fa475f;
+    transform: translateX(100%);
+    animation: slideText 1.5s ease-out forwards;
+}
+@keyframes slideText {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+.heading {
+    font-size: 32px;
+    font-weight: bold;
+}
+.subtext {
+    font-size: 18px;
+}
+/* Pickup & Drop Input Fields */
+.input-container {
+display: flex;
+flex-direction: column;
+gap: 10px;
+margin-top: 20px;
+}
+.input-box {
+display: flex;
+align-items: center;
+background: white;
+padding: 10px 15px;
+border-radius: 25px;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+border: 1px solid #eee;
+}
+.input-box img {
+width: 20px;
+margin-right: 10px;
+}
+.input-box input {
+border: none;
+outline: none;
+font-size: 14px;
+flex-grow: 1;
+font-family: 'Poppins', sans-serif;
+}
+
+/* See Prices Button (Same Style as Before) */
+.see-prices-btn {
+background-color: #fa475f;
+color: white;
+padding: 10px 20px;
+border: none;
+cursor: pointer;
+font-size: 18px;
+margin-top: 20px;
+margin-left: 180px;
+border-radius: 5px;
+transition: background 0.3s;
+}
+.see-prices-btn:hover {
+background-color: black;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Page 2: Why Choose RapidRescue */
+.why-choose {
+    text-align: center;
+    padding: 60px 5%;
+    background-color: white;
+    padding-top: 40px;
+    /* background-color: #f9f9f9; */
+}
+.why-choose h2 {
+    font-size: 32px;
+    color: #222;
+    margin-bottom: 10px;
+}
+.why-choose p {
+    font-size: 18px;
+    color: #666;
+}
+.why-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+}
+.features {
+    width: 50%;
+}
+
+/* Updated Feature Box Styles */
+.feature-box {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eee;
+}
+.feature-box img {
+    width: 60px;
+    margin-right: 15px;
+}
+.feature-text {
+    text-align: left;
+}
+.feature-text h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #222;
+}
+.feature-text p {
+    font-size: 16px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.why-ambulance {
+    width: 45%;
+}
+.why-ambulance img {
+    /* height: 100%; */
+    width: 100%;
+    display: block;
+}
+/* Footer */
+.footer {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 20px 5%;
+    margin-top: 40px;
+}
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 10px;
+}
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+.footer-links a:hover {
+    color: #fa475f;
+}
+.social-icons {
+    margin-top: 10px;
+}
+.social-icons img {
+    width: 25px;
+    margin: 0 10px;
+    transition: transform 0.3s;
+}
+.social-icons img:hover {
+    transform: scale(1.1);
+}
+.social-icons a {
+display: inline-flex;
+padding: 10px;
+border: 2px solid #ccc;
+border-radius: 8px;
+font-size: 24px;
+color: #333;
+text-decoration: none;
+margin: 0 8px;
+}
+/* 🌟 RESPONSIVE DESIGN 🌟 */
+@media (max-width: 1024px) {
+.navbar {
+padding: 15px 3%;
+}
+.search-bar-container {
+width: 200px;
+}
+}
+
+@media (max-width: 768px) {
+/* Navbar Adjustments */
+.nav-links {
+display: none;
+flex-direction: column;
+position: absolute;
+top: 60px;
+right: 0;
+background: white;
+width: 100%;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+padding: 10px 0;
+}
+.nav-links a {
+display: block;
+padding: 12px;
+text-align: center;
+}
+.menu-icon {
+display: block;
+font-size: 24px;
+cursor: pointer;
+}
+.show-menu {
+display: flex;
+}
+
+/* Make Navbar Elements Fit Mobile */
+.navbar {
+flex-direction: row;
+align-items: center;
+}
+.search-bar-container {
+width: 180px;
+padding: 5px;
+}
+
+/* Hero Section */
+.container {
+flex-direction: column;
+height: auto;
+padding-top: 100px;
+text-align: center;
+}
+.ambulance {
+width: 80%;
+margin-bottom: 20px;
+}
+.text-content {
+width: 90%;
+}
+.heading {
+font-size: 24px;
+}
+.subtext {
+font-size: 16px;
+}
+.book-now {
+font-size: 16px;
+padding: 8px 16px;
+}
+
+/* Why Choose Section */
+.why-container {
+flex-direction: column;
+align-items: center;
+}
+.features, .why-ambulance {
+width: 90%;
+}
+
+/* Footer */
+.footer-links {
+flex-wrap: wrap;
+}
+.social-icons img {
+width: 20px;
+}
+}
+
+@media (max-width: 480px) {
+.navbar {
+flex-direction: row;
+padding: 12px 5%;
+}
+.logo {
+font-size: 18px;
+}
+.search-bar-container {
+width: 150px;
+padding: 5px;
+}
+.container {
+padding: 80px 5%;
+}
+.heading {
+font-size: 20px;
+}
+.subtext {
+font-size: 14px;
+}
+.book-now {
+font-size: 14px;
+padding: 6px 12px;
+}
+}
+
+.hospital {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.hospital:last-child {
+    border-bottom: none;
+}
+
+.hospital h2 {
+    margin: 0 0 10px;
+    color: #fa475f;
+}
+
+.hospital p {
+    margin: 5px 0;
+}
+
+.hospital a {
+    color: #fa475f;
+    text-decoration: none;
+}
+
+.hospital a:hover {
+    text-decoration: underline;
+}
+        
