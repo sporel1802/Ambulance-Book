@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #map { height: 600px; width: 100%; margin: 20px auto; }
+        #controls { margin: 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        input, button { padding: 8px; font-size: 14px; margin: 5px; width: 250px; }
+        button { cursor: pointer; background: #fa475f; color: white; border: none; border-radius: 5px; }
+        .leaflet-popup-content { font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2>Ambulance Tracking System</h2>
+
+    <div id="controls">
+        <input id="destination" type="text" placeholder="Enter destination">
+        <button onclick="calculateRoute()">Go</button>
+    </div>
+
+    </div>
+    <div id="map"></div>
+
+    <button class="location" onclick="location.href='index.html'">BACK TO HOME </button>
+    <button class="location" onclick="location.href='BOOK.html'">BOOK NOW </button>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+ 
+        <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places" async defer></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDlCKNeyGr9Op0gZkys8SFeY6KMFp7p4GM&libraries=places&callback=initAutocomplete" async defer></script>
+        <script>
+            let map, ambulanceMarker, userMarker, routingControl, distanceMarker;
+const pricePerKm = 20; // Price per km in INR
+let hospitalMarkers = [];
+
+function initMap() {
+    // Initialize the map with a default location (Delhi) and zoom level
+    map = L.map('map').setView([28.7041, 77.1025], 12);
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Try to get user's location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const userLocation = [position.coords.latitude, position.coords.longitude];
+
+            // Add marker for user's location
+            userMarker = L.marker(userLocation).addTo(map)
+                .bindPopup("Your Location").openPopup();
+            map.setView(userLocation, 12);
+
+            // Fetch and display nearby hospitals
+            fetchNearbyHospitals(userLocation[0], userLocation[1]);
+
+            // Add "My Location" button
+            addLocationButton(userLocation);
+        }, error => {
+            console.error("Geolocation error:", error);
+            alert("Location access denied. Please enable location services.");
+        });
+    } else {
+        alert("Geolocation is not supported by your browser.");
+    }
+
+    // Initialize ambulance marker at a default location
+    ambulanceMarker = L.marker([28.7041, 77.1025], { 
+        icon: L.icon({ iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png' }) 
+    }).addTo(map).bindPopup("Ambulance");
+
+    // Update ambulance location every 5 seconds
+    setInterval(updateAmbulanceLocation, 5000);
+}
+
+function updateAmbulanceLocation() {
+    // Fetch real-time ambulance location from the server
+    fetch("https://your-server.com/get-ambulance-location")
+        .then(response => response.json())
+        .then(data => {
+            const newLocation = [data.latitude, data.longitude];
+
+            // Update ambulance marker position
+            ambulanceMarker.setLatLng(newLocation).bindPopup("Ambulance").openPopup();
+            map.setView(newLocation, 12);
+        })
+        .catch(error => console.error("Error fetching ambulance location:", error));
+}
+
+function fetchNearbyHospitals(lat, lon) {
+    // Query Overpass API for nearby hospitals within 5km radius
+    const overpassQuery = `
+        [out:json];
+        node
+          [amenity=hospital]
+          (around:5000, ${lat}, ${lon});
+        out;
+    `;
+
+    fetch("https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(overpassQuery))
+        .then(response => response.json())
+        .then(data => {
+            // Remove existing hospital markers before adding new ones
+            hospitalMarkers.forEach(marker => map.removeLayer(marker));
+            hospitalMarkers = [];
+
+            data.elements.forEach(hospital => {
+                let hospitalName = hospital.tags.name || "Unnamed Hospital";
+                let address = hospital.tags["addr:street"] || "Address not available";
+
+                // If address is missing, fetch it using reverse geocoding
+                if (address === "Address not available") {
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${hospital.lat}&lon=${hospital.lon}`)
+                        .then(response => response.json())
+                        .then(locationData => {
+                            address = locationData.display_name || "Address not available";
+                            addHospitalMarker(hospital, hospitalName, address);
+                        })
+                        .catch(error => console.error("Error fetching address:", error));
+                } else {
+                    addHospitalMarker(hospital, hospitalName, address);
+                }
+            });
+        })
+        .catch(error => console.error("Error fetching hospitals:", error));
+}
+
+function addHospitalMarker(hospital, hospitalName, address) {
+    let contact = hospital.tags["contact:phone"] || "No contact info";
+    let rating = (Math.random() * (5 - 3) + 3).toFixed(1); // Generate a random rating between 3 and 5
+
+    let hospitalMarker = L.marker([hospital.lat, hospital.lon], {
+        icon: L.icon({
+            iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/88/Map_marker.svg',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+        })
+    }).addTo(map)
+    .bindPopup(`
+        <b>${hospitalName}</b><br>
+        <b>Rating:</b> ⭐${rating}/5<br>
+        <b>Address:</b> ${address}<br>
+        <b>Contact:</b> ${contact}<br>
+        <button onclick="calculateRouteToHospital(${hospital.lat}, ${hospital.lon})">
+            🚑 Get Directions
+        </button>
+    `);
+
+    hospitalMarkers.push(hospitalMarker);
+}
+
+function calculateRouteToHospital(hospitalLat, hospitalLon) {
+    if (!userMarker) {
+        alert("User location not available.");
+        return;
+    }
+
+    const userLocation = userMarker.getLatLng();
+    
+    // Remove existing routes
+    if (routingControl) {
+        map.removeControl(routingControl);
+    }
+    if (distanceMarker) {
+        map.removeLayer(distanceMarker);
+    }
+
+    // Add new route from user to hospital
+    routingControl = L.Routing.control({
+        waypoints: [
+            L.latLng(userLocation.lat, userLocation.lng),
+            L.latLng(hospitalLat, hospitalLon)
+        ],
+        routeWhileDragging: true
+    }).addTo(map);
+
+    routingControl.on('routesfound', function(e) {
+        let distance = e.routes[0].summary.totalDistance / 1000; // Convert meters to km
+        let cost = distance * pricePerKm; // Calculate estimated cost
+        let midpoint = e.routes[0].coordinates[Math.floor(e.routes[0].coordinates.length / 2)];
+
+        // Display distance and estimated cost on the map
+        distanceMarker = L.marker([midpoint.lat, midpoint.lng]).addTo(map)
+            .bindPopup(`Distance: ${distance.toFixed(2)} km<br>Estimated Cost: ₹${cost.toFixed(2)}`).openPopup();
+    });
+}
+
+function addLocationButton(userLocation) {
+    let locationControl = L.control({ position: 'topright' });
+
+    locationControl.onAdd = function(map) {
+        let button = L.DomUtil.create('button', 'leaflet-bar leaflet-control leaflet-control-custom');
+        button.innerHTML = '📍 My Location';
+
+        L.DomEvent.on(button, 'click', function () {
+            map.setView(userLocation, 14);
+        });
+
+        return button;
+    };
+
+    locationControl.addTo(map);
+}
+
+function calculateRoute() {
+    if (!userMarker) {
+        alert("User location not available.");
+        return;
+    }
+
+    const destination = document.getElementById("destination").value;
+    if (!destination) {
+        alert("Please enter a destination.");
+        return;
+    }
+
+    // Convert destination name to latitude & longitude using Nominatim
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length === 0) {
+                alert("Location not found.");
+                return;
+            }
+
+            const destinationLatLng = [data[0].lat, data[0].lon];
+
+            // Remove previous route
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+            if (distanceMarker) {
+                map.removeLayer(distanceMarker);
+            }
+
+            // Add new route from user to destination
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(userMarker.getLatLng().lat, userMarker.getLatLng().lng),
+                    L.latLng(destinationLatLng[0], destinationLatLng[1])
+                ],
+                routeWhileDragging: true
+            }).addTo(map);
+
+            routingControl.on('routesfound', function(e) {
+                let distance = e.routes[0].summary.totalDistance / 1000;
+                let cost = distance * pricePerKm;
+                let midpoint = e.routes[0].coordinates[Math.floor(e.routes[0].coordinates.length / 2)];
+
+                // Show estimated cost & distance
+                distanceMarker = L.marker([midpoint.lat, midpoint.lng]).addTo(map)
+                    .bindPopup(`Distance: ${distance.toFixed(2)} km<br>Estimated Cost: ₹${cost.toFixed(2)}`).openPopup();
+            });
+        })
+        .catch(error => console.error("Error fetching location:", error));
+}
+
+// Initialize the map when the page loads
+window.onload = initMap;
+
+function initAutocomplete() {
+    let destinationInput = document.getElementById("destination");
+
+    if (!destinationInput) {
+        console.error("Destination input field not found!");
+        return;
+    }
+
+    try {
+        let autocomplete = new google.maps.places.Autocomplete(destinationInput);
+        
+        autocomplete.setComponentRestrictions({ country: "IN" });
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                let userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                let options = { bounds: new google.maps.LatLngBounds(userLocation), strictBounds: false };
+                autocomplete.setOptions(options);
+            });
+        }
+
+        autocomplete.addListener("place_changed", () => {
+            let place = autocomplete.getPlace();
+            if (!place.geometry) {
+                console.error("No location details available for the selected place.");
+                return;
+            }
+            console.log("Selected Location:", place.formatted_address);
+        });
+
+    } catch (error) {
+        console.error("Google Places Autocomplete failed:", error);
+    }
+}
+
+
+</script>
+
+
+
+
+
+</body>
+</html>
